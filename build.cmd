@@ -1,0 +1,1 @@
+gcc game.c Dungeon/DungeonLevel.c Dungeon/DungeonTile.c Helpers/Drawing.c Entities/Player/EPlayer.c Entities/Crawler/ECrawler.c Entities/Rat/ERat.c Items/Gold/IGold.c Items/Flintlock/IFlintlock.c -o game -lncurses
