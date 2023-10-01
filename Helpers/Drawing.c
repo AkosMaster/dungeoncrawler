@@ -77,7 +77,7 @@ char WaitForInput(DungeonLevel* level) {
 	
 	char ch = getch();
 	while (ch == ERR) {
-		DrawLevel(level);
+		DungeonLevel_DrawLevel(level);
 		Sleep(SleepBeforeNextFrame);
 
 		ch = getch();

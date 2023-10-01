@@ -123,53 +123,35 @@ void GenerateTunnel(DungeonLevel *level) {
 	int endX = rand()%LevelWidth;
 
 	List tunnelPath;
-	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true, false);
+	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true);
 
 	for (int i = tunnelPath.length-1; i >= 0; i--) {
 		Node n = tunnelPath.items[i];
 
 		level->tiles[n.y][n.x] = Floor0;
 		if (n.y + 1 < LevelHeight && rand()%3 != 0)
-			level->tiles[n.y+1][n.x] = Floor1;
+			level->tiles[n.y+1][n.x] = Floor0;
 		if (n.y - 1 > 0 && rand()%3 != 0)
-			level->tiles[n.y-1][n.x] = Floor1;
+			level->tiles[n.y-1][n.x] = Floor0;
 		if (n.x + 1 < LevelWidth && rand()%3 != 0)
-			level->tiles[n.y][n.x+1] = Floor1;
+			level->tiles[n.y][n.x+1] = Floor0;
 		if (n.x - 1 > 0 && rand()%3 != 0)
-			level->tiles[n.y][n.x-1] = Floor1;
+			level->tiles[n.y][n.x-1] = Floor0;
 	}
 }
 
-
 void DungeonLevel_GenerateLevel(DungeonLevel *level) {
-	
-	DungeonRoom startingRoom;
-	GenerateRoom(level, 10, 10, 50, 50, &startingRoom);
-
-	DungeonRoom rooms[500] = {startingRoom};
-	int roomCount = 1;
-
-	for (int i = 0; i < roomCount; i++) {
-		DungeonRoom currentRoom = rooms[i];
-
-		DungeonRoom bottomRoom;
-		if (GenerateRoom(level, currentRoom.y + currentRoom.h + rand()%5 + 1, currentRoom.x + rand()%5-5, 50, 50, &bottomRoom)) {
-			ConnectRooms(level, &currentRoom, &bottomRoom);
-
-			rooms[roomCount] = bottomRoom;
-			roomCount++;
-		}
-
-		DungeonRoom rightRoom;
-		if (GenerateRoom(level, currentRoom.y + rand()%5 -5, currentRoom.x + currentRoom.w + rand()%5 + 1, 50, 50, &rightRoom)) {
-			ConnectRooms(level, &currentRoom, &rightRoom);
-		
-			rooms[roomCount] = rightRoom;
-			roomCount++;
+	for (int y = 0; y < LevelHeight; y+=15) {
+		for (int x = 0; x < LevelWidth; x+=15) {
+			if (rand()%2 == 0) {
+				int randHeight = fmin(LevelHeight-y-2, rand()%11+3);
+				int randWidth = fmin(LevelWidth-x-2, rand()%11+3);
+				GenerateRoom(level, y, x, randHeight, randWidth);
+			}
 		}
 	}
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 20; i++) {
 		GenerateTunnel(level);
 	}
 }

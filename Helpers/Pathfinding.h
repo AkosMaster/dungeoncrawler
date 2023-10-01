@@ -102,7 +102,7 @@ static void Backtrace(DungeonLevel *level, List *outPath, List *closed, Node goa
 	AppendToList(outPath, node);
 }
 
-static void Pathfind(DungeonLevel *level, List *outPath, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall) {
+static void Pathfind(DungeonLevel *level, List *outPath, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall, bool ignoreDoors) {
 
 	outPath->length = 0; // clear output list
 
@@ -146,9 +146,12 @@ static void Pathfind(DungeonLevel *level, List *outPath, int fromY, int fromX, i
 				continue;
 			}
 
-			if (!(ignoreCaveWall && level->tiles[successorNode.y][successorNode.x].id == CaveWall.id)) {
-				if (!level->tiles[successorNode.y][successorNode.x].walkable) {
-					continue;
+			
+			if (!level->tiles[successorNode.y][successorNode.x].walkable) {
+				if (!(level->tiles[successorNode.y][successorNode.x].id == CaveWall.id && ignoreCaveWall)) {
+					if (!((level->tiles[successorNode.y][successorNode.x].id == OpenDoor.id || level->tiles[successorNode.y][successorNode.x].id == ClosedDoor.id) && ignoreDoors)) {
+						continue;
+					}
 				}
 			}
 

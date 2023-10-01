@@ -6,24 +6,31 @@ typedef struct Entity Entity;
 #include "../Items/Item.h"
 #include "../Dungeon/DungeonLevel.h"
 
-typedef enum EntityType {
-	Invalid,
-	Player,
-	Object,
-	DroppedItem,
-
-	Enemy
-} EntityType;
+typedef enum EntityTeam {
+	None,
+	DontAttack,
+	Rats,
+	Crawlers,
+	Humanoids,
+} EntityTeam;
 
 typedef void (*OnTurnFunction)(Entity* baseEntity);
 typedef void (*DrawFunction)(Entity* baseEntity);
 typedef void (*DeSpawnFunction)(Entity* baseEntity);
+typedef void (*DamageFunction)(Entity* baseEntity, Entity* attacker, int points);
 
 typedef struct Entity {
 	//EntityType type;
+
+	char symbol;
+	short foreColor;
+	short backColor;
+
 	int health;
-	char name[10];
+	char name[20];
 	int speed; // what percentage of turns can the entity move in?
+
+	EntityTeam team;
 
 	int movementPoints;
 
@@ -38,6 +45,15 @@ typedef struct Entity {
 	OnTurnFunction onTurn;
 	DrawFunction draw;
 	DeSpawnFunction deSpawn;
+	DamageFunction damage;
 } Entity;
+
+void Entity_OnTurn(Entity* entity);
+
+void Entity_Draw(Entity* entity);
+
+void Entity_deSpawn(Entity* entity);
+
+void Entity_Damage(Entity* entity, Entity* attacker, int points);
 
 #endif

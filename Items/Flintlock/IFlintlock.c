@@ -46,7 +46,7 @@ void IFlintlock_OnUse(Item* baseItem) {
 				break;
 			default:
 				mvprintw(DrawnLevelHeight+3, 0, "\tmisfire!");
-				baseItem->owner->health -= 15;
+				Entity_Damage(baseItem->owner, baseItem->owner, 5);
 				flintlock->loaded = false;
 				return;
 				break;
@@ -67,6 +67,14 @@ void IFlintlock_OnUse(Item* baseItem) {
 		flintlock->lastShotTravelLength = 0;
 
 		while (level->tiles[bulletY][bulletX].walkable) {
+
+			for (int i = 0; i < level->loadedEntityCount; i++) {
+				Entity* entity = level->loadedEntities[i];
+				if (entity->y == bulletY && entity->x == bulletX) {
+					Entity_Damage(entity, baseItem->owner, 15);
+				}
+			}
+
 			bulletY += deltaY;
 			bulletX += deltaX;
 			flintlock->lastShotTravelLength++;

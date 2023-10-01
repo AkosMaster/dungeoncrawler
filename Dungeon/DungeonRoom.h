@@ -4,32 +4,23 @@
 #include "DungeonTile.h"
 #include "DungeonLevel.h"
 #include "../Entities/Rat/ERat.h"
+#include "../Entities/RatShrine/ERatShrine.h"
 #include "../Entities/Crawler/ECrawler.h"
 
-typedef enum RoomType {
-	Default,
-} RoomType;
+typedef struct DungeonRoom {
 
-void GenerateRoom(DungeonLevel *level, int y, int x, int height, int width) {
-	for (int i = y; i < y+height; i++) {
-		for (int j = x; j < x + width; j++) {
+	bool successfullyGenerated;
 
-			// these should be walls as it is the edge of the room
-			if (i == y || i == y+height-1 || j == x || j == x+width-1) {
-				level->tiles[i][j] = RoomWall;
-			} else {
-				level->tiles[i][j] = (i+j)%2 == 0 ? Floor0 : Floor2;
-			}
+	int y;
+	int x;
+	int h;
+	int w;
 
-		}
-	}
+	DungeonLevel* level;
 
-	if (rand()%2 == 0)
-		Spawn_ERat(level, y+1, x+1);
+} DungeonRoom;
 
-	if (rand()%2 == 0) {
-		Spawn_ECrawler(level, y+1, x+1);
-	}
-}
+bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth, DungeonRoom* roomInfo);
+void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB);
 
 #endif

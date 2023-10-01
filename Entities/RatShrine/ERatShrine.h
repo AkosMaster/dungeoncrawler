@@ -6,14 +6,12 @@
 #include "../../Dungeon/DungeonLevel.h"
 #include <stdlib.h>
 
-typedef struct ERat {
+typedef struct ERatShrine {
 
 	Entity baseEntity;
-	bool isRed;
-	int biteCooldown;
 
-} ERat;
+} ERatShrine;
 
-ERat* Spawn_ERat(DungeonLevel* level, int y, int x, bool isRed);
+ERatShrine* Spawn_ERatShrine(DungeonLevel* level, int y, int x);
 
 #endif
