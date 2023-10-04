@@ -23,6 +23,10 @@ bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth
 		return false;
 	}
 
+	DungeonRoom r = {.y = y, .x = x, .h = height, .w = width, .level=level};
+
+	*roomInfo = r;
+
 	for (int i = y; i < y+height; i++) {
 		for (int j = x; j < x + width; j++) {
 
@@ -32,18 +36,13 @@ bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth
 			} else {
 				level->tiles[i][j] = (i+j)%2 == 0 ? Floor3 : Floor0;
 			}
-
 		}
 	}
-
-	DungeonRoom r = {.y = y, .x = x, .h = height, .w = width, .level=level};
-
-	*roomInfo = r;
 
 	if (rand()%5 == 0) {
 		Spawn_ERat(level, y+1, x+1, rand()%13==0);
 	} else
-	if (rand()%10 == 0) {
+	if (rand()%5 == 0) {
 		Spawn_ECrawler(level, y+rand()%(height-2)+1, x+rand()%(width-2)+1);
 	} else
 	if (rand()%5 == 0) {
@@ -56,24 +55,28 @@ bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth
 	return true;
 }
 
-bool GeneratePath(DungeonLevel *level, int startY, int startX, int endY, int endX) {
-	List tunnelPath;
+bool GeneratePath(DungeonLevel *level, int startY, int startX, int endY, int endX, bool special) {
+	NodeList tunnelPath;
+	InitNodeList(&tunnelPath);
 	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true, true);
-	if (tunnelPath.length == 0)
+	if (tunnelPath.length == 0) {
+		FreeNodeList(&tunnelPath);
 		return false;
+	}
 
 	for (int i = tunnelPath.length-1; i >= 0; i--) {
 		Node n = tunnelPath.items[i];
 
 		if (level->tiles[n.y][n.x].id == CaveWall.id) {
-			level->tiles[n.y][n.x] = Floor0;
+			level->tiles[n.y][n.x] = special ? Floor2 : Floor0;
 		}
 	}
 
+	FreeNodeList(&tunnelPath);
 	return true;
 }
 
-void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB) {
+void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB, bool specialPath) {
 	DungeonRoom* leftRoom = roomA->x <= roomB->x ? roomA : roomB;
 	DungeonRoom* rightRoom = roomA->x <= roomB->x ? roomB : roomA;
 
@@ -119,7 +122,7 @@ void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB) {
 	level->tiles[leftDoorY][leftDoorX] = rand()%10==0 ? OpenDoor : ClosedDoor;
 	level->tiles[rightDoorY][rightDoorX] = rand()%10==0 ? OpenDoor : ClosedDoor;
 
-	GeneratePath(level, leftDoorY, leftDoorX, rightDoorY, rightDoorX);
+	GeneratePath(level, leftDoorY, leftDoorX, rightDoorY, rightDoorX, specialPath);
 }
 
 

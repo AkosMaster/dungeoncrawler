@@ -2,7 +2,6 @@
 #define DUNGEONTILE_H
 
 #include <ncurses/ncurses.h>
-
 // a level consists of tiles
 /*typedef enum TileType {
 	

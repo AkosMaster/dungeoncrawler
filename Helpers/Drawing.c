@@ -82,5 +82,44 @@ char WaitForInput(DungeonLevel* level) {
 
 		ch = getch();
 	}
+	if (ch == '*') {
+		exit(0);
+	}
 	return ch;
 }
+
+#define CONSOLE_LINES 10
+#define CONSOLE_WIDTH DrawnLevelWidth
+
+void WriteText(char* text) {
+	static char console[CONSOLE_LINES][50];
+
+	for (int i = 0; i < CONSOLE_LINES-1; i++) {
+		strcpy(console[i], console[i+1]);
+	}
+
+	strcpy(console[CONSOLE_LINES-1], text);
+
+	for (int i = 0; i < CONSOLE_LINES; i++) {
+		for (int j = 0; j < CONSOLE_WIDTH; j++) { // clear line
+			mvprintw(DrawnLevelHeight + 1 + i, j, " ");
+		}
+		mvprintw(DrawnLevelHeight + 1 + i, 0, console[i]);
+		mvprintw(DrawnLevelHeight + 1 + i, CONSOLE_WIDTH, "|");
+	}
+
+	for (int j = 0; j <= CONSOLE_WIDTH; j++) {
+		mvprintw(DrawnLevelHeight + 1 + CONSOLE_LINES, j, "=");
+	}
+}
+
+
+
+
+
+
+
+
+
+
+

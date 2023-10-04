@@ -6,7 +6,7 @@
 #define LevelHeight 200
 #define LevelWidth 200
 
-#define DrawnLevelHeight 30
+#define DrawnLevelHeight 25
 #define DrawnLevelWidth 60
 
 #define LoadedDistance 35

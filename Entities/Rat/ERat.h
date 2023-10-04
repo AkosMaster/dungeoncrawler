@@ -1,6 +1,8 @@
 #ifndef ERAT_H
 #define ERAT_H
 
+#define RAT_REVENGE_TRESHOLD 5
+
 #include "../Entity.h"
 #include "../../Helpers/Drawing.h"
 #include "../../Dungeon/DungeonLevel.h"

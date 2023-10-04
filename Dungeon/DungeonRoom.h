@@ -21,6 +21,6 @@ typedef struct DungeonRoom {
 } DungeonRoom;
 
 bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth, DungeonRoom* roomInfo);
-void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB);
+void ConnectRooms(DungeonLevel* level, DungeonRoom* roomA, DungeonRoom* roomB, bool specialPath);
 
 #endif

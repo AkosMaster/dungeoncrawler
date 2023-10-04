@@ -122,7 +122,8 @@ void GenerateTunnel(DungeonLevel *level) {
 	int endY = rand()%LevelHeight;
 	int endX = rand()%LevelWidth;
 
-	List tunnelPath;
+	NodeList tunnelPath;
+	InitNodeList(&tunnelPath);
 	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true, false);
 
 	for (int i = tunnelPath.length-1; i >= 0; i--) {
@@ -138,34 +139,63 @@ void GenerateTunnel(DungeonLevel *level) {
 		if (n.x - 1 > 0 && rand()%3 != 0)
 			level->tiles[n.y][n.x-1] = Floor1;
 	}
+	FreeNodeList(&tunnelPath);
 }
 
 
 void DungeonLevel_GenerateLevel(DungeonLevel *level) {
-	
-	DungeonRoom startingRoom;
-	GenerateRoom(level, 10, 10, 50, 50, &startingRoom);
 
-	DungeonRoom rooms[500] = {startingRoom};
+	DungeonRoom firstRoom;
+	GenerateRoom(level, 10, 10, 50, 50, &firstRoom);
+	
+	DungeonRoom rooms[500];
+	rooms[0] = firstRoom;
+
 	int roomCount = 1;
 
 	for (int i = 0; i < roomCount; i++) {
 		DungeonRoom currentRoom = rooms[i];
 
 		DungeonRoom bottomRoom;
-		if (GenerateRoom(level, currentRoom.y + currentRoom.h + rand()%5 + 1, currentRoom.x + rand()%5-5, 50, 50, &bottomRoom)) {
-			ConnectRooms(level, &currentRoom, &bottomRoom);
+		int bottomY = currentRoom.y + currentRoom.h + rand()%5 + 1;
+		int bottomX = currentRoom.x + rand()%5-5;
+		if (GenerateRoom(level, bottomY, bottomX, 50, 50, &bottomRoom)) {
+			ConnectRooms(level, &currentRoom, &bottomRoom, false);
 
 			rooms[roomCount] = bottomRoom;
 			roomCount++;
+		} else if (rand()%2 == 0) {
+			for (int j = 0; j < roomCount; j++) {
+				if (i == j)
+					continue;
+				if (rooms[j].y <= bottomY && rooms[j].y + rooms[j].h > bottomY) {
+					if (rooms[j].x <= bottomX && rooms[j].x + rooms[j].w > bottomX) {
+						ConnectRooms(level, &currentRoom, &rooms[j], false);
+						break;
+					}
+				}
+			}
 		}
 
 		DungeonRoom rightRoom;
-		if (GenerateRoom(level, currentRoom.y + rand()%5 -5, currentRoom.x + currentRoom.w + rand()%5 + 1, 50, 50, &rightRoom)) {
-			ConnectRooms(level, &currentRoom, &rightRoom);
-		
+		int rightY = currentRoom.y + rand()%5 -5;
+		int rightX = currentRoom.x + currentRoom.w + rand()%5 + 1;
+		if (GenerateRoom(level, rightY, rightX, 50, 50, &rightRoom)) {
+			ConnectRooms(level, &currentRoom, &rightRoom, false);
+
 			rooms[roomCount] = rightRoom;
 			roomCount++;
+		} else if (rand()%3 == 0){
+			for (int j = 0; j < roomCount; j++) {
+				if (i == j)
+					continue;
+				if (rooms[j].y <= rightY && rooms[j].y + rooms[j].h > rightY) {
+					if (rooms[j].x <= rightX && rooms[j].x + rooms[j].w > rightX) {
+						ConnectRooms(level, &currentRoom, &rooms[j], false);
+						break;
+					}
+				}
+			}
 		}
 	}
 

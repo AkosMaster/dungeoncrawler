@@ -17,4 +17,6 @@ bool CanSee(DungeonLevel* level, int fromY, int fromX, int toY, int toX);
 // waits for an input key and displays the level that the input is being asked for from
 char WaitForInput(DungeonLevel* level);
 
+void WriteText(char* text);
+
 #endif

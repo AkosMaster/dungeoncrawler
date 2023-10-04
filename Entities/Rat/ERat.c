@@ -4,8 +4,6 @@
 #include "../../Entities/DroppedItem/EDroppedItem.h"
 #include "../../Items/Gold/IGold.h"
 
-#define RAT_REVENGE_TRESHOLD 5
-
 void ERat_OnTurn(Entity* baseEntity) {
 	ERat* rat = baseEntity->parentPtr;
 	DungeonLevel* level = baseEntity->level;
@@ -64,9 +62,6 @@ void ERat_Draw(Entity* baseEntity) {
 	baseEntity->backColor = rat->biteCooldown > 0 ? COLOR_MAGENTA : COLOR_BLACK;
 }
 
-void ERat_Damage(Entity* baseEntity, Entity* attacker, int points) {
-}
-
 void ERat_DeSpawn(Entity* baseEntity) {
 	EDroppedItem* ditem = Spawn_EDroppedItem(baseEntity->level, baseEntity->y, baseEntity->x);
 	Give_IGold(&ditem->baseEntity, rand()%3+1);
@@ -75,31 +70,30 @@ void ERat_DeSpawn(Entity* baseEntity) {
 
 	if (baseEntity->level->ratDeaths == RAT_REVENGE_TRESHOLD) {
 		//TODO spawn king rat
+		WriteText("The King Rat seeks revenge!");
 	}
 }
 
 ERat* Spawn_ERat(DungeonLevel* level, int y, int x, bool isRed) {
 	ERat* rat = (ERat*)malloc(sizeof(ERat));
 
-	static Entity ERat_BaseEntity = {
-	 .health=2,
-	 .name="rat", 
-	 .symbol = 'r',
-	 .foreColor = COLOR_WHITE,
-	 .backColor = COLOR_BLACK,
-	 .movementPoints=0, 
-	 .speed=60,
-	 .team=Rats,
-	 .damage=ERat_Damage, 
-	 .onTurn=ERat_OnTurn, 
-	 .draw=ERat_Draw,
-	 .deSpawn=ERat_DeSpawn};
-
-	rat->baseEntity = ERat_BaseEntity;
+	rat->baseEntity = defaultEntity;
 	rat->baseEntity.level = level;
 	rat->baseEntity.parentPtr = rat;
 	rat->baseEntity.y = y;
 	rat->baseEntity.x = x;
+
+	rat->baseEntity.health = 2;
+	rat->baseEntity.speed = 60;
+	rat->baseEntity.team=Rats;
+	rat->baseEntity.symbol = 'r';
+	strcpy(rat->baseEntity.name, "rat");
+	rat->baseEntity.foreColor = COLOR_WHITE;
+	rat->baseEntity.backColor = COLOR_BLACK;
+
+	rat->baseEntity.onTurn = ERat_OnTurn;
+	rat->baseEntity.draw = ERat_Draw;
+	rat->baseEntity.deSpawn = ERat_DeSpawn;
 
 	rat->isRed = isRed;
 	rat->biteCooldown = 0;

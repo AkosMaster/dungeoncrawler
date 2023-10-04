@@ -7,25 +7,25 @@ void IFlintlock_OnUse(Item* baseItem) {
 	IFlintlock* flintlock = (IFlintlock*)baseItem;
 
 	if (!flintlock->loaded) {
-		mvprintw(DrawnLevelHeight+2, 0, "flintlock> pick an item to load into the gun (0-9) ");
+		WriteText("pick an item to load into the gun (0-9) ");
 		char cmd = WaitForInput(baseItem->owner->level);
 
 		if (cmd-'0' >= 0 && cmd-'0' < 10) {
 			Item* item = baseItem->owner->inventory[cmd-'0'];
 
 			if (!item) {
-				mvprintw(DrawnLevelHeight+3, 0, "\tno item to load! ");
+				WriteText("no item to load!");
 				return;
 			}
 			if (!item->stackable) {
-				mvprintw(DrawnLevelHeight+3, 0, "\tcant be loaded!");
+				WriteText("item cant be loaded!");
 				return;
 			}
 			item->stackSize--;
 			flintlock->loaded = true;
 		}
 	} else {
-		mvprintw(DrawnLevelHeight+2, 0, "flintlock> direction to fire (wasd) ");
+		WriteText("pick direction to fire (wasd)");
 		char cmd = WaitForInput(baseItem->owner->level);
 
 		int deltaY = 0;
@@ -45,7 +45,7 @@ void IFlintlock_OnUse(Item* baseItem) {
 				deltaX++;
 				break;
 			default:
-				mvprintw(DrawnLevelHeight+3, 0, "\tmisfire!");
+				WriteText("misfire! You hurt yourself!");
 				Entity_Damage(baseItem->owner, baseItem->owner, 5);
 				flintlock->loaded = false;
 				return;
@@ -120,12 +120,17 @@ void IFlintlock_DrawEffects(Item* baseItem) {
 IFlintlock* Give_IFlintlock(Entity* owner) {
 	IFlintlock* flintlock = (IFlintlock*)malloc(sizeof(IFlintlock));
 
-	static Item IFlintlock_BaseItem = {.name="flintlock", .symbol='r', .foreColor=COLOR_BLACK, .backColor=COLOR_WHITE, .stackable=false, .stackSize=1};
-	flintlock->baseItem = IFlintlock_BaseItem;
+	flintlock->baseItem = defaultItem;
+
+	strcpy(flintlock->baseItem.name, "flintlock");
+	flintlock->baseItem.symbol = 'r';
+	flintlock->baseItem.foreColor = COLOR_BLACK;
+	flintlock->baseItem.backColor = COLOR_WHITE;
 
 	flintlock->baseItem.owner = owner;
-	flintlock->baseItem.onUse = IFlintlock_OnUse;
 	flintlock->baseItem.drawEffects = IFlintlock_DrawEffects;
+
+	flintlock->lastShotTravelLength = 0;
 
 	return flintlock;
 }

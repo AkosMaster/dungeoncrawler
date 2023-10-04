@@ -10,8 +10,6 @@
 typedef struct ECrawler {
 
 	Entity baseEntity;
-	List currentPath;
-
 	int biteCooldown;
 
 } ECrawler;

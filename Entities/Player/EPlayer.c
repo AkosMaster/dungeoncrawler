@@ -8,7 +8,7 @@ void InteractMenu(Entity* playerEntity) {
 
 	DungeonLevel* level = playerEntity->level;
 
-	mvprintw(DrawnLevelHeight+2, 0, "> pick a direction to interact (wasd)\t\t\t\t\t\t\t\t");
+	WriteText("pick a direction to interact (wasd)");
 	char direction = WaitForInput(level);
 
 
@@ -18,9 +18,23 @@ void InteractMenu(Entity* playerEntity) {
 	int options = 0;
 	bool doors = false;
 	if (level->tiles[y][x].id == ClosedDoor.id || level->tiles[y][x].id == OpenDoor.id) {
-		mvprintw(DrawnLevelHeight+2+options, 0, " (e) open/close door\t\t\t\t\t\t\t\t");
+		WriteText("(e) open/close door");
 		options++;
 		doors = true;
+	}
+
+	Entity* entityOptions[10] = {0};
+	for (int i = 0; i < level->loadedEntityCount && options < 10; i++) {
+		Entity* ent = level->loadedEntities[i];
+
+		if (ent->y == y && ent->x == x) {
+			entityOptions[options] = ent;
+			char buffer[50];
+			sprintf(buffer, "%d) %s", options, ent->name);
+			WriteText(buffer);
+
+			options++;
+		}
 	}
 
 	if (doors && options == 1) { // only one option and there is a door....
@@ -37,7 +51,8 @@ void InteractMenu(Entity* playerEntity) {
 	if (sel == 'g') {
 		if (WaitForInput(level) == 'o') {
 			if (WaitForInput(level) == 'd') {
-				mvprintw(DrawnLevelHeight+2, 0, "> c: spawn crawler, i: immortality\t\t\t\t\t\t\t\t");
+				WriteText("Welcome to godmode!");
+				WriteText("c: spawn crawler, i: immortality");
 
 				switch (WaitForInput(level)) {
 					case 'c':
@@ -50,13 +65,29 @@ void InteractMenu(Entity* playerEntity) {
 			}
 		}
 	}
+
+	if (sel-'0' >= 0 && sel-'0' < 10) {
+		if (entityOptions[sel-'0']) {
+			Entity* ent = entityOptions[sel-'0'];
+
+			if (ent->interact_Loot) {
+				WriteText("l) loot");
+			}
+
+			char i = WaitForInput(level);
+
+			switch(i) {
+				case 'l':
+					Entity_Interact_Loot(ent, playerEntity);
+					break;
+			}
+		}
+	} 
 }
 
 void EPlayer_OnTurn(Entity* baseEntity) {
 	EPlayer* player = baseEntity->parentPtr;
 	DungeonLevel* level = baseEntity->level;
-
-	mvprintw(DrawnLevelHeight+2, 0, "> \t\t\t\t\t\t\t\t");
 
 	char command = WaitForInput(level);
 
@@ -81,7 +112,7 @@ void EPlayer_OnTurn(Entity* baseEntity) {
 		Item* item = baseEntity->inventory[command-'0'];
 
 		if (item) {
-			item->onUse(item);
+			//item->onUse(item);
 		}
 	}
 }
@@ -136,26 +167,24 @@ void EPlayer_DeSpawn(Entity* baseEntity) {
 EPlayer* Spawn_EPlayer(DungeonLevel* level, int y, int x) {
 	EPlayer* player = (EPlayer*)malloc(sizeof(EPlayer));
 
-	static Entity EPlayer_BaseEntity = {
-		.health=100, 
-		.name="player", 
-		.symbol = '@',
-		.foreColor = COLOR_CYAN,
-		.backColor = COLOR_BLACK,
-		.movementPoints=0, 
-		.speed=50, 
-		.team=Humanoids,
-		.damage=EPlayer_Damage, 
-		.onTurn=EPlayer_OnTurn, 
-		.draw=EPlayer_Draw, 
-		.deSpawn=EPlayer_DeSpawn
-	};
-
-	player->baseEntity = EPlayer_BaseEntity;
+	player->baseEntity = defaultEntity;
 	player->baseEntity.level = level;
 	player->baseEntity.parentPtr = player;
 	player->baseEntity.y = y;
 	player->baseEntity.x = x;
+
+	player->baseEntity.health = 100;
+	player->baseEntity.speed = 50;
+	player->baseEntity.team=None;
+	player->baseEntity.symbol = '@';
+	strcpy(player->baseEntity.name, "player");
+	player->baseEntity.foreColor = COLOR_CYAN;
+	player->baseEntity.backColor = COLOR_BLACK;
+
+	player->baseEntity.onTurn = EPlayer_OnTurn;
+	player->baseEntity.draw = EPlayer_Draw;
+	player->baseEntity.damage = EPlayer_Damage;
+	player->baseEntity.deSpawn = EPlayer_DeSpawn;
 
 	DungeonLevel_AddEntity(level, &player->baseEntity);
 	level->currentPlayer = &player->baseEntity;

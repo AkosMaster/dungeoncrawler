@@ -1,5 +1,5 @@
-#ifndef ERAT_H
-#define ERAT_H
+#ifndef ERATSHRINE_H
+#define ERATSHRINE_H
 
 #include "../Entity.h"
 #include "../../Helpers/Drawing.h"

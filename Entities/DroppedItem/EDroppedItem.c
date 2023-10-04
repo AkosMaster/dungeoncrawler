@@ -1,10 +1,6 @@
 #include "EDroppedItem.h"
 #include "../../Dungeon/DungeonLevel.h"
 
-void EDroppedItem_OnTurn(Entity* baseEntity) {
-	
-}
-
 void EDroppedItem_Draw(Entity* baseEntity) {
 	EDroppedItem* ditem = baseEntity->parentPtr;
 	
@@ -22,30 +18,26 @@ void EDroppedItem_Draw(Entity* baseEntity) {
 	baseEntity->foreColor = blink ? COLOR_GREEN : COLOR_BLACK;
 }
 
-void EDroppedItem_Damage(Entity* baseEntity, Entity* attacker, int points) {
-}
+void EDroppedItem_Loot(Entity* baseEntity, Entity* looter) {
 
-void EDroppedItem_DeSpawn(Entity* baseEntity) {
 }
 
 EDroppedItem* Spawn_EDroppedItem(DungeonLevel* level, int y, int x) {
 	EDroppedItem* ditem = (EDroppedItem*)malloc(sizeof(EDroppedItem));
 
-	static Entity EDroppedItem_BaseEntity = {
-	 .health=5,
-	 .name="dropped item",
-	 .symbol = '%',
-	 .foreColor = COLOR_WHITE,
-	 .backColor = COLOR_BLACK,
-	 .movementPoints=0, 
-	 .speed=60, 
-	 .team=DontAttack,
-	 .damage=EDroppedItem_Damage, 
-	 .onTurn=EDroppedItem_OnTurn, 
-	 .draw=EDroppedItem_Draw, 
-	 .deSpawn=EDroppedItem_DeSpawn};
+	ditem->baseEntity = defaultEntity;
 
-	ditem->baseEntity = EDroppedItem_BaseEntity;
+	ditem->baseEntity.health = 10;
+	ditem->baseEntity.speed = 0;
+	ditem->baseEntity.team=DontAttack;
+	ditem->baseEntity.symbol = '%';
+	strcpy(ditem->baseEntity.name, "dropped item");
+	ditem->baseEntity.foreColor = COLOR_GREEN;
+	ditem->baseEntity.backColor = COLOR_BLACK;
+
+	ditem->baseEntity.draw = EDroppedItem_Draw;
+	ditem->baseEntity.interact_Loot = EDroppedItem_Loot;
+
 	ditem->baseEntity.level = level;
 	ditem->baseEntity.parentPtr = ditem;
 	ditem->baseEntity.y = y;
