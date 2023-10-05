@@ -1,12 +1,7 @@
 #include "EDroppedItem.h"
 #include "../../Dungeon/DungeonLevel.h"
 
-void EDroppedItem_Draw(Entity* baseEntity) {
-	EDroppedItem* ditem = baseEntity->parentPtr;
-	
-	int screenPosY;
-	int screenPosX;
-
+void EDroppedItem_Draw(Entity* baseEntity) {	
 	static int blink_timer = 0;
 	static bool blink = false;
 

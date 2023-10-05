@@ -38,9 +38,6 @@ void ECrawler_OnTurn(Entity* baseEntity) {
 
 void ECrawler_Draw(Entity* baseEntity) {
 	ECrawler* crawler = baseEntity->parentPtr;
-	
-	int screenPosY;
-	int screenPosX;
 
 	if (crawler->biteCooldown > 0) {
 		for (int i = 0; i < crawler->baseEntity.currentPath.length; i++) {

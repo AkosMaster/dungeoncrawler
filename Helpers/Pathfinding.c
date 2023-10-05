@@ -127,7 +127,6 @@ void Pathfind(DungeonLevel *level, NodeList *outPath, int fromY, int fromX, int 
 	AppendToNodeList(&OpenList, startNode);
 
 	// based on https://mat.uab.cat/~alseda/MasterOpt/AStar-Algorithm.pdf
-	int iterations = 0;
 	while (OpenList.length > 0 && ClosedList.length < NODELIST_MAX && OpenList.length < NODELIST_MAX) {
 		Node currentNode = PopLowestFScore(&OpenList, toY, toX);
 

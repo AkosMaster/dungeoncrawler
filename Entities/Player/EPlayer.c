@@ -11,16 +11,14 @@ void InteractMenu(Entity* playerEntity) {
 	WriteText("pick a direction to interact (wasd)");
 	char direction = WaitForInput(level);
 
-
 	int y= playerEntity->y + (direction=='w' ? -1 : 0) + (direction=='s' ? 1 : 0);
 	int x= playerEntity->x + (direction=='a' ? -1 : 0) + (direction=='d' ? 1 : 0);
 	
 	int options = 0;
-	bool doors = false;
+	bool door = false;
 	if (level->tiles[y][x].id == ClosedDoor.id || level->tiles[y][x].id == OpenDoor.id) {
-		WriteText("(e) open/close door");
 		options++;
-		doors = true;
+		door = true;
 	}
 
 	Entity* entityOptions[10] = {0};
@@ -37,18 +35,20 @@ void InteractMenu(Entity* playerEntity) {
 		}
 	}
 
-	if (doors && options == 1) { // only one option and there is a door....
+	if (door && options == 1) { // only one option and there is a door....
 		DungeonLevel_OpenCloseDoor(level, y, x);
 		return;
 	}
+
+	if (door)
+		WriteText("(e) open/close door");
 
 	char sel = WaitForInput(level);
 
 	if (sel == 'e') {
 		DungeonLevel_OpenCloseDoor(level, y, x);	
-	}
-
-	if (sel == 'g') {
+	} 
+	else if (sel == 'g') {
 		if (WaitForInput(level) == 'o') {
 			if (WaitForInput(level) == 'd') {
 				WriteText("Welcome to godmode!");
@@ -64,9 +64,8 @@ void InteractMenu(Entity* playerEntity) {
 				}
 			}
 		}
-	}
-
-	if (sel-'0' >= 0 && sel-'0' < 10) {
+	} 
+	else if (sel-'0' >= 0 && sel-'0' < 10) {
 		if (entityOptions[sel-'0']) {
 			Entity* ent = entityOptions[sel-'0'];
 
@@ -85,8 +84,31 @@ void InteractMenu(Entity* playerEntity) {
 	} 
 }
 
+void ItemUseMenu(Item* item) {
+	if (item->interact_Reload) {
+		WriteText("r) reload");
+	}
+
+	switch(WaitForInput(item->owner->level)) {
+		case 'r':
+			if (item->interact_Reload) {
+
+				WriteText("choose ammo (0-9)");
+				char slot = WaitForInput(item->owner->level)-'0';
+				if (slot < 0 || slot > 9) {
+					return;
+				}
+				if (!item->owner->inventory[(int)slot]) {
+					return;
+				}
+
+				Item_Interact_Reload(item, item->owner->inventory[(int)slot]);
+			}
+			break;
+	}
+}
+
 void EPlayer_OnTurn(Entity* baseEntity) {
-	EPlayer* player = baseEntity->parentPtr;
 	DungeonLevel* level = baseEntity->level;
 
 	char command = WaitForInput(level);
@@ -112,6 +134,7 @@ void EPlayer_OnTurn(Entity* baseEntity) {
 		Item* item = baseEntity->inventory[command-'0'];
 
 		if (item) {
+			ItemUseMenu(item);
 			//item->onUse(item);
 		}
 	}
@@ -139,9 +162,6 @@ void DrawInventory(EPlayer* player) {
 
 void EPlayer_Draw(Entity* baseEntity) {
 	EPlayer* player = baseEntity->parentPtr;
-	
-	int screenPosY;
-	int screenPosX;
 
 	static int blink_timer = 0;
 	static bool blink = false;

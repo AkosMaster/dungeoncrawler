@@ -203,3 +203,11 @@ void DungeonLevel_GenerateLevel(DungeonLevel *level) {
 		GenerateTunnel(level);
 	}
 }
+
+void DungeonLevel_OpenCloseDoor(DungeonLevel* level, int y, int x) {
+	if (level->tiles[y][x].id == ClosedDoor.id) {
+		level->tiles[y][x] = OpenDoor;
+	} else if (level->tiles[y][x].id == OpenDoor.id) {
+		level->tiles[y][x] = ClosedDoor;
+	}
+}

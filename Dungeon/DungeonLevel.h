@@ -14,6 +14,7 @@
 // we need to forward declare since entity and dungeonlevel need eachother
 typedef struct DungeonLevel DungeonLevel;
 #include "../Entities/Entity.h"
+#include "../Helpers/Drawing.h"
 
 #define LevelMaxEntities 5000
 typedef struct DungeonLevel {
@@ -29,8 +30,8 @@ typedef struct DungeonLevel {
 	int ratDeaths;
 } DungeonLevel;
 
-void AddEntityToLevel(DungeonLevel* level, Entity* entity);
-void RemoveEntityFromLevel(DungeonLevel* level, Entity* entity);
+void DungeonLevel_AddEntity(DungeonLevel* level, Entity* entity);
+void DungeonLevel_RemoveEntity(DungeonLevel* level, Entity* entity);
 
 void DungeonLevel_FindLoadedEntities(DungeonLevel* level);
 void DungeonLevel_OnTurnEntities(DungeonLevel* level);
@@ -49,12 +50,6 @@ void DungeonLevel_DrawLevel(DungeonLevel *level);
 void DungeonLevel_GenerateLevel(DungeonLevel *level);
 
 
-static void DungeonLevel_OpenCloseDoor(DungeonLevel* level, int y, int x) {
-	if (level->tiles[y][x].id == ClosedDoor.id) {
-		level->tiles[y][x] = OpenDoor;
-	} else if (level->tiles[y][x].id == OpenDoor.id) {
-		level->tiles[y][x] = ClosedDoor;
-	}
-}
+void DungeonLevel_OpenCloseDoor(DungeonLevel* level, int y, int x);
 
 #endif

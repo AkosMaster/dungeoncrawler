@@ -83,6 +83,10 @@ void IFlintlock_OnUse(Item* baseItem) {
 	}
 }
 
+void IFlintlock_Interact_Reload(Item* baseItem, Item* ammo) {
+	WriteText("reloaded");
+}
+
 void IFlintlock_DrawEffects(Item* baseItem) {
 	IFlintlock* flintlock = (IFlintlock*)baseItem;
 
@@ -131,6 +135,8 @@ IFlintlock* Give_IFlintlock(Entity* owner) {
 	flintlock->baseItem.drawEffects = IFlintlock_DrawEffects;
 
 	flintlock->lastShotTravelLength = 0;
+
+	flintlock->baseItem.interact_Reload = IFlintlock_Interact_Reload;
 
 	return flintlock;
 }
