@@ -1,3 +1,5 @@
+#include "../../debugmalloc.h"
+
 #include "EDroppedItem.h"
 #include "../../Dungeon/DungeonLevel.h"
 
@@ -14,7 +16,7 @@ void EDroppedItem_Draw(Entity* baseEntity) {
 }
 
 void EDroppedItem_Loot(Entity* baseEntity, Entity* looter) {
-
+	Entity_deSpawn(baseEntity);
 }
 
 EDroppedItem* Spawn_EDroppedItem(DungeonLevel* level, int y, int x) {
@@ -34,7 +36,7 @@ EDroppedItem* Spawn_EDroppedItem(DungeonLevel* level, int y, int x) {
 	ditem->baseEntity.interact_Loot = EDroppedItem_Loot;
 
 	ditem->baseEntity.level = level;
-	ditem->baseEntity.parentPtr = ditem;
+	//ditem->baseEntity.parentPtr = ditem;
 	ditem->baseEntity.y = y;
 	ditem->baseEntity.x = x;
 

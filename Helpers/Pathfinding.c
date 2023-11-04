@@ -1,3 +1,5 @@
+#include "../debugmalloc.h"
+
 #include "Pathfinding.h"
 
 bool IsNodeListInit(NodeList *list) {

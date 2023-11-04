@@ -1,3 +1,4 @@
+#include "../debugmalloc.h"
 #include "DungeonTile.h"
 #include "../Helpers/Drawing.h"
 

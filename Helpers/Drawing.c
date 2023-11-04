@@ -1,3 +1,5 @@
+#include "../debugmalloc.h"
+
 #include "Drawing.h"
 #include <ncurses/ncurses.h>
 #include "../Dungeon/DungeonLevel.h"

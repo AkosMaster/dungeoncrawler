@@ -1,3 +1,5 @@
+#include "../../debugmalloc.h"
+
 #include "ERatShrine.h"
 #include "../../Dungeon/DungeonLevel.h"
 
@@ -33,7 +35,7 @@ ERatShrine* Spawn_ERatShrine(DungeonLevel* level, int y, int x) {
 	shrine->baseEntity.damage = ERatShrine_Damage;
 
 	shrine->baseEntity.level = level;
-	shrine->baseEntity.parentPtr = shrine;
+	//shrine->baseEntity.parentPtr = shrine;
 	shrine->baseEntity.y = y;
 	shrine->baseEntity.x = x;
 

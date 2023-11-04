@@ -14,17 +14,21 @@
 
 #include "Items/Gold/IGold.h"
 #include "Items/Flintlock/IFlintlock.h"
+#include "Items/MagicWand/IMagicWand.h"
 
-#include <windows.h>
+#include <windows.h>	
+
+#include "debugmalloc.h"
 
 int main() {
+
+	//debugmalloc_log_file("dmalloc.txt");
 
 	srand(time(0));
 
 	initscr();
 	start_color();
 	nodelay(stdscr, TRUE);
-	//raw();
 	keypad(stdscr, TRUE);
 	curs_set(0);
 
@@ -34,7 +38,7 @@ int main() {
 
 	DungeonLevel level0;
 	
-	DungeonLevel_ClearEntities(&level0);
+	DungeonLevel_InitLevel(&level0);
 	DungeonLevel_ClearLevel(&level0);
 	DungeonLevel_GenerateLevel(&level0);
 	
@@ -42,28 +46,33 @@ int main() {
 
 	EPlayer* player = Spawn_EPlayer(&level0, 13,13);
 	
-	player->baseEntity.inventory[0] = &Give_IGold(&player->baseEntity, 13)->baseItem;
-	player->baseEntity.inventory[1] = &Give_IFlintlock(&player->baseEntity)->baseItem;
+	Give_IGold(&player->baseEntity, 13);
+	Give_IFlintlock(&player->baseEntity);
+	//Give_IMagicWand(&player->baseEntity, Spell_Freeze);
 
 	printf("> Player spawned.\n");
-
-	//for (int i = 0; i < 100; i++) {Spawn_ECrawler(&level0, 20,10);};
 	
 	int tick = 0;
-	while(true) {
+	while(level0.currentPlayer) {
 //		mvprintw(0, DrawnLevelWidth+2, "%d entities / %d thinking                 ", level0.entityCount, level0.loadedEntityCount);
 		mvprintw(2, DrawnLevelWidth+2, "health: %d               ", player->baseEntity.health);
 		DungeonLevel_FindLoadedEntities(&level0);
 		//printf("	-FLE()\n");
-		DungeonLevel_OnTurnEntities(&level0);
-		//printf("	-OTE()\n");
+		
 		DungeonLevel_DrawLevel(&level0);
 		//printf("	-DRW()\n");
+		
+		DungeonLevel_OnTurnEntities(&level0);
+		//printf("	-OTE()\n");
+
 		refresh();
-		Sleep(SleepBeforeNextFrame); // if the player is really slow we dont wait for things to render so much
+		Sleep(SleepBeforeNextFrame);
 		//printf("> tick %d.\n", tick);
 		tick++;
+
+		//debugmalloc_dump();
 	}
+	DungeonLevel_DeSpawnAllEntities(&level0);
 
 	endwin(); // end curses mode
 	return 0;

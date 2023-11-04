@@ -1,8 +1,10 @@
+#include "../../debugmalloc.h"
+
 #include "ECrawler.h"
 #include "../../Dungeon/DungeonLevel.h"
 
 void ECrawler_OnTurn(Entity* baseEntity) {
-	ECrawler* crawler = baseEntity->parentPtr;
+	ECrawler* crawler = (ECrawler*)baseEntity;
 
 	if (crawler->biteCooldown > 0) {
 		crawler->biteCooldown--;
@@ -37,7 +39,7 @@ void ECrawler_OnTurn(Entity* baseEntity) {
 }
 
 void ECrawler_Draw(Entity* baseEntity) {
-	ECrawler* crawler = baseEntity->parentPtr;
+	ECrawler* crawler = (ECrawler*)baseEntity;
 
 	if (crawler->biteCooldown > 0) {
 		for (int i = 0; i < crawler->baseEntity.currentPath.length; i++) {
@@ -69,7 +71,7 @@ ECrawler* Spawn_ECrawler(DungeonLevel* level, int y, int x) {
 	crawler->baseEntity.draw = ECrawler_Draw;
 
 	crawler->baseEntity.level = level;
-	crawler->baseEntity.parentPtr = crawler;
+	//crawler->baseEntity.parentPtr = crawler;
 	crawler->baseEntity.y = y;
 	crawler->baseEntity.x = x;
 

@@ -1,10 +1,7 @@
+#include "../../debugmalloc.h"
 
 #include "IGold.h"
 #include <ncurses/ncurses.h>
-
-void IGold_OnUse(Item* baseItem) {
-
-}
 
 IGold* Give_IGold(Entity* owner, int stackSize) {
 	IGold* gold = (IGold*)malloc(sizeof(IGold));
@@ -22,6 +19,11 @@ IGold* Give_IGold(Entity* owner, int stackSize) {
 
 	gold->baseItem.stackSize = stackSize;
 	gold->baseItem.drawEffects = 0;
+
+	if (!Entity_AddItemToInventory(owner, &gold->baseItem)) {
+		Item_Delete(&gold->baseItem);
+		return 0;
+	}
 
 	return gold;
 }

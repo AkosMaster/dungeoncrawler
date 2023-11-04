@@ -1,3 +1,5 @@
+#include "../../debugmalloc.h"
+
 #include "EPlayer.h"
 #include "../../Dungeon/DungeonLevel.h"
 #include <time.h>
@@ -41,7 +43,7 @@ void InteractMenu(Entity* playerEntity) {
 	}
 
 	if (door)
-		WriteText("(e) open/close door");
+		WriteText("e) open/close door");
 
 	char sel = WaitForInput(level);
 
@@ -84,30 +86,6 @@ void InteractMenu(Entity* playerEntity) {
 	} 
 }
 
-void ItemUseMenu(Item* item) {
-	if (item->interact_Reload) {
-		WriteText("r) reload");
-	}
-
-	switch(WaitForInput(item->owner->level)) {
-		case 'r':
-			if (item->interact_Reload) {
-
-				WriteText("choose ammo (0-9)");
-				char slot = WaitForInput(item->owner->level)-'0';
-				if (slot < 0 || slot > 9) {
-					return;
-				}
-				if (!item->owner->inventory[(int)slot]) {
-					return;
-				}
-
-				Item_Interact_Reload(item, item->owner->inventory[(int)slot]);
-			}
-			break;
-	}
-}
-
 void EPlayer_OnTurn(Entity* baseEntity) {
 	DungeonLevel* level = baseEntity->level;
 
@@ -134,8 +112,7 @@ void EPlayer_OnTurn(Entity* baseEntity) {
 		Item* item = baseEntity->inventory[command-'0'];
 
 		if (item) {
-			ItemUseMenu(item);
-			//item->onUse(item);
+			ItemInteractMenu(item);
 		}
 	}
 }
@@ -161,7 +138,7 @@ void DrawInventory(EPlayer* player) {
 }
 
 void EPlayer_Draw(Entity* baseEntity) {
-	EPlayer* player = baseEntity->parentPtr;
+	EPlayer* player = (EPlayer*)baseEntity;
 
 	static int blink_timer = 0;
 	static bool blink = false;
@@ -181,7 +158,7 @@ void EPlayer_Damage(Entity* baseEntity, Entity* attacker, int points) {
 
 void EPlayer_DeSpawn(Entity* baseEntity) {
 	printf("Player was despawned\n");
-	exit(1);
+	baseEntity->level->currentPlayer = 0;
 }
 
 EPlayer* Spawn_EPlayer(DungeonLevel* level, int y, int x) {
@@ -189,7 +166,6 @@ EPlayer* Spawn_EPlayer(DungeonLevel* level, int y, int x) {
 
 	player->baseEntity = defaultEntity;
 	player->baseEntity.level = level;
-	player->baseEntity.parentPtr = player;
 	player->baseEntity.y = y;
 	player->baseEntity.x = x;
 

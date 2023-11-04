@@ -16,7 +16,7 @@ typedef struct DungeonLevel DungeonLevel;
 #include "../Entities/Entity.h"
 #include "../Helpers/Drawing.h"
 
-#define LevelMaxEntities 5000
+#define LevelMaxEntities 1000
 typedef struct DungeonLevel {
 	Tile tiles[LevelHeight][LevelWidth];
 	Entity* entities[LevelMaxEntities];
@@ -33,11 +33,13 @@ typedef struct DungeonLevel {
 void DungeonLevel_AddEntity(DungeonLevel* level, Entity* entity);
 void DungeonLevel_RemoveEntity(DungeonLevel* level, Entity* entity);
 
+void DungeonLevel_DeSpawnAllEntities(DungeonLevel* level);
+
 void DungeonLevel_FindLoadedEntities(DungeonLevel* level);
 void DungeonLevel_OnTurnEntities(DungeonLevel* level);
 
 // fill level with default tiles
-void DungeonLevel_ClearEntities(DungeonLevel* level);
+void DungeonLevel_InitLevel(DungeonLevel* level);
 void DungeonLevel_ClearLevel(DungeonLevel *level);
 
 // draw level to screen

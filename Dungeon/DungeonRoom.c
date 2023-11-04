@@ -1,3 +1,4 @@
+#include "../debugmalloc.h"
 
 #include "DungeonRoom.h"
 
@@ -36,6 +37,13 @@ bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth
 			} else {
 				level->tiles[i][j] = (i+j)%2 == 0 ? Floor3 : Floor0;
 			}
+		}
+	}
+
+	if (rand()%3==0) {
+		Spawn_EChest(level, y+rand()%(height-2)+1, x+rand()%(width-2)+1);
+		if (rand()%3==0) {
+			Spawn_EChest(level, y+rand()%(height-2)+1, x+rand()%(width-2)+1);
 		}
 	}
 

@@ -1,3 +1,5 @@
+#include "../../debugmalloc.h"
+
 #include "ERat.h"
 #include "../../Dungeon/DungeonLevel.h"
 
@@ -5,7 +7,7 @@
 #include "../../Items/Gold/IGold.h"
 
 void ERat_OnTurn(Entity* baseEntity) {
-	ERat* rat = baseEntity->parentPtr;
+	ERat* rat = (ERat*)baseEntity;
 	DungeonLevel* level = baseEntity->level;
 
 	if (level->ratDeaths >= RAT_REVENGE_TRESHOLD) {
@@ -56,7 +58,7 @@ void ERat_OnTurn(Entity* baseEntity) {
 }
 
 void ERat_Draw(Entity* baseEntity) {
-	ERat* rat = baseEntity->parentPtr;
+	ERat* rat = (ERat*)baseEntity;
 	
 	baseEntity->foreColor = rat->isRed ? COLOR_RED : COLOR_WHITE;
 	baseEntity->backColor = rat->biteCooldown > 0 ? COLOR_MAGENTA : COLOR_BLACK;
@@ -79,7 +81,7 @@ ERat* Spawn_ERat(DungeonLevel* level, int y, int x, bool isRed) {
 
 	rat->baseEntity = defaultEntity;
 	rat->baseEntity.level = level;
-	rat->baseEntity.parentPtr = rat;
+	//rat->baseEntity.parentPtr = rat;
 	rat->baseEntity.y = y;
 	rat->baseEntity.x = x;
 

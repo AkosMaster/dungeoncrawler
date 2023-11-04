@@ -1,85 +1,38 @@
+#include "../../debugmalloc.h"
 
 #include "IFlintlock.h"
 #include "../../Helpers/Drawing.h"
 #include <ncurses/ncurses.h>
 
-void IFlintlock_OnUse(Item* baseItem) {
+void IFlintlock_Interact_Attack(Item* baseItem, int dirY, int dirX) {
 	IFlintlock* flintlock = (IFlintlock*)baseItem;
 
-	if (!flintlock->loaded) {
-		WriteText("pick an item to load into the gun (0-9) ");
-		char cmd = WaitForInput(baseItem->owner->level);
+	flintlock->loaded = false;
 
-		if (cmd-'0' >= 0 && cmd-'0' < 10) {
-			Item* item = baseItem->owner->inventory[cmd-'0'];
+	DungeonLevel* level = baseItem->owner->level;
+	int bulletY = baseItem->owner->y + dirY;
+	int bulletX = baseItem->owner->x + dirX;
 
-			if (!item) {
-				WriteText("no item to load!");
-				return;
+	// drawing setup
+	flintlock->lastShotOriginY = bulletY;
+	flintlock->lastShotOriginX = bulletX;
+	flintlock->shotTimer = 12;
+	flintlock->lastShotDeltaY = dirY;
+	flintlock->lastShotDeltaX = dirX;
+	flintlock->lastShotTravelLength = 0;
+
+	while (level->tiles[bulletY][bulletX].walkable) {
+
+		for (int i = 0; i < level->loadedEntityCount; i++) {
+			Entity* entity = level->loadedEntities[i];
+			if (entity->y == bulletY && entity->x == bulletX) {
+				Entity_Damage(entity, baseItem->owner, 15);
 			}
-			if (!item->stackable) {
-				WriteText("item cant be loaded!");
-				return;
-			}
-			item->stackSize--;
-			flintlock->loaded = true;
-		}
-	} else {
-		WriteText("pick direction to fire (wasd)");
-		char cmd = WaitForInput(baseItem->owner->level);
-
-		int deltaY = 0;
-		int deltaX = 0;
-
-		switch(cmd) {
-			case 'w':
-				deltaY--;
-				break;
-			case 's':
-				deltaY++;
-				break;
-			case 'a':
-				deltaX--;
-				break;
-			case 'd':
-				deltaX++;
-				break;
-			default:
-				WriteText("misfire! You hurt yourself!");
-				Entity_Damage(baseItem->owner, baseItem->owner, 5);
-				flintlock->loaded = false;
-				return;
-				break;
 		}
 
-		flintlock->loaded = false;
-
-		DungeonLevel* level = baseItem->owner->level;
-		int bulletY = baseItem->owner->y + deltaY;
-		int bulletX = baseItem->owner->x + deltaX;
-
-		// drawing setup
-		flintlock->lastShotOriginY = bulletY;
-		flintlock->lastShotOriginX = bulletX;
-		flintlock->shotTimer = 12;
-		flintlock->lastShotDeltaY = deltaY;
-		flintlock->lastShotDeltaX = deltaX;
-		flintlock->lastShotTravelLength = 0;
-
-		while (level->tiles[bulletY][bulletX].walkable) {
-
-			for (int i = 0; i < level->loadedEntityCount; i++) {
-				Entity* entity = level->loadedEntities[i];
-				if (entity->y == bulletY && entity->x == bulletX) {
-					Entity_Damage(entity, baseItem->owner, 15);
-				}
-			}
-
-			bulletY += deltaY;
-			bulletX += deltaX;
-			flintlock->lastShotTravelLength++;
-		}
-
+		bulletY += dirY;
+		bulletX += dirX;
+		flintlock->lastShotTravelLength++;
 	}
 }
 
@@ -137,6 +90,12 @@ IFlintlock* Give_IFlintlock(Entity* owner) {
 	flintlock->lastShotTravelLength = 0;
 
 	flintlock->baseItem.interact_Reload = IFlintlock_Interact_Reload;
+	flintlock->baseItem.interact_Attack = IFlintlock_Interact_Attack;
+
+	if (!Entity_AddItemToInventory(owner, &flintlock->baseItem)) {
+		Item_Delete(&flintlock->baseItem);
+		return 0;
+	}
 
 	return flintlock;
 }

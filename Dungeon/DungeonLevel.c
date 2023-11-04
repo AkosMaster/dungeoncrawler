@@ -1,3 +1,5 @@
+#include "../debugmalloc.h"
+
 #include "DungeonLevel.h"
 #include "DungeonRoom.h"
 #include "../Helpers/Pathfinding.h"
@@ -7,7 +9,7 @@
 #include <math.h>
 #include <ncurses/ncurses.h>
 
-void DungeonLevel_ClearEntities(DungeonLevel* level) {
+void DungeonLevel_InitLevel(DungeonLevel* level) {
 	level->entityCount = 0;
 	level->ratDeaths = 0;
 } 
@@ -34,6 +36,12 @@ void DungeonLevel_RemoveEntity(DungeonLevel* level, Entity* entity) {
 	return;
 }
 
+void DungeonLevel_DeSpawnAllEntities(DungeonLevel* level) {
+	while (level->entityCount > 0) {
+		Entity_deSpawn(level->entities[0]);
+	}
+}
+
 void DungeonLevel_FindLoadedEntities(DungeonLevel* level) {
 	level->loadedEntityCount = 0;
 	for (int i = 0; i < level->entityCount; i++) {
@@ -57,6 +65,8 @@ void DungeonLevel_OnTurnEntities(DungeonLevel* level) {
 			Entity_OnTurn(entity);
 			entity->movementPoints -= 100;
 		}
+
+		Entity_OnGameTick(entity);
 	}
 }
 
