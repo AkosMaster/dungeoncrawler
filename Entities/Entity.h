@@ -37,6 +37,8 @@ typedef struct Entity {
 	short foreColor; // szimbolum szine
 	short backColor; // szimbolum hatterszine
 
+	int score; // pontok
+
 	int health; // eletero
 	char name[20]; // nev
 	int speed; // a globalis "korok" hany szazalekaban kap az entitas lehetoseget hogy mozogjon?
@@ -73,6 +75,7 @@ typedef struct Entity {
 // alaveto entitas, a Spawn_(valami) fuggvenyek ezt masoljak le es irjak at.
 const static Entity defaultEntity = {
 		.health=50, 
+		.score=1,
 		.name="default", 
 	 	.symbol = '?',
 	 	.foreColor = 0,

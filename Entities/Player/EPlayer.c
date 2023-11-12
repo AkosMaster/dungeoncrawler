@@ -150,6 +150,8 @@ void EPlayer_Draw(Entity* baseEntity) {
 
 	baseEntity->backColor = blink ? COLOR_WHITE : COLOR_BLACK;
 
+	mvprintw(2, DrawnLevelWidth+2, "health: %d               ", player->baseEntity.health);
+	mvprintw(1, DrawnLevelWidth+2, "score: %d               ", player->baseEntity.score);
 	DrawInventory(player);
 }
 

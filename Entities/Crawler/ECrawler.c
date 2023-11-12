@@ -75,6 +75,8 @@ ECrawler* Spawn_ECrawler(DungeonLevel* level, int y, int x) {
 	crawler->baseEntity.y = y;
 	crawler->baseEntity.x = x;
 
+	crawler->baseEntity.score = 10;
+
 	crawler->biteCooldown = 0;
 	InitNodeList(&crawler->baseEntity.currentPath);
 

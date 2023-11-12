@@ -28,6 +28,7 @@ extern const Tile CaveWall;
 extern const Tile RoomWall;
 extern const Tile ClosedDoor;
 extern const Tile OpenDoor;
+extern const Tile ExitGate;
 
 void DrawTile(int y, int x, Tile t);
 

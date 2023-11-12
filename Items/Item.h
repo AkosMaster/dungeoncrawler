@@ -12,6 +12,7 @@ typedef struct Item Item;
 
 typedef void (*Interaction_Reload)(Item* baseItem, Item* ammo);
 typedef void (*Interaction_Attack)(Item* baseItem, int dirY, int dirX);
+typedef void (*Interaction_Consume)(Item* baseItem);
 typedef void (*DrawEffectsFunction)(Item* baseItem);
 typedef void (*DeleteFunction)(Item* baseItem);
 
@@ -33,6 +34,7 @@ typedef struct Item {
 	//interakciok
 	Interaction_Reload interact_Reload; // ujratolt
 	Interaction_Attack interact_Attack; // tamadas a targgyal
+	Interaction_Consume interact_Consume; // elfogyasztás
 
 } Item;
 
@@ -47,6 +49,7 @@ const static Item defaultItem = {
 
 	.drawEffects=0,
 	.interact_Reload=0,
+	.interact_Consume=0,
 };
 
 // felhozza az interakcio menut a targyhoz, kiirja az osszes lehetseges interakciot.
@@ -64,4 +67,6 @@ void Item_Interact_Reload(Item* item, Item* ammo);
 
 // Interakcio: tamadas a targgyal
 void Item_Interact_Attack(Item* item, int dirY, int dirX);
+
+void Item_Interact_Consume(Item* item);
 #endif

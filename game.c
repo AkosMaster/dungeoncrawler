@@ -22,8 +22,6 @@
 
 int main() {
 
-	//debugmalloc_log_file("dmalloc.txt");
-
 	srand(time(0));
 
 	initscr();
@@ -48,29 +46,18 @@ int main() {
 	
 	Give_IGold(&player->baseEntity, 13);
 	Give_IFlintlock(&player->baseEntity);
-	//Give_IMagicWand(&player->baseEntity, Spell_Freeze);
 
 	printf("> Player spawned.\n");
 	
-	int tick = 0;
 	while(level0.currentPlayer) {
-//		mvprintw(0, DrawnLevelWidth+2, "%d entities / %d thinking                 ", level0.entityCount, level0.loadedEntityCount);
-		mvprintw(2, DrawnLevelWidth+2, "health: %d               ", player->baseEntity.health);
-		DungeonLevel_FindLoadedEntities(&level0);
-		//printf("	-FLE()\n");
+		DungeonLevel_FindLoadedEntities(&level0);;
 		
 		DungeonLevel_DrawLevel(&level0);
-		//printf("	-DRW()\n");
 		
 		DungeonLevel_OnTurnEntities(&level0);
-		//printf("	-OTE()\n");
 
 		refresh();
 		Sleep(SleepBeforeNextFrame);
-		//printf("> tick %d.\n", tick);
-		tick++;
-
-		//debugmalloc_dump();
 	}
 	DungeonLevel_DeSpawnAllEntities(&level0);
 

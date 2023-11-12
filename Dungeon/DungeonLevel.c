@@ -1,5 +1,6 @@
 #include "../debugmalloc.h"
 
+#include "DungeonTile.h"
 #include "DungeonLevel.h"
 #include "DungeonRoom.h"
 #include "../Helpers/Pathfinding.h"
@@ -168,7 +169,7 @@ void DungeonLevel_GenerateLevel(DungeonLevel *level) {
 
 		DungeonRoom bottomRoom;
 		int bottomY = currentRoom.y + currentRoom.h + rand()%5 + 1;
-		int bottomX = currentRoom.x + rand()%5-5;
+		int bottomX = currentRoom.x + rand()%10-5;
 		if (GenerateRoom(level, bottomY, bottomX, 50, 50, &bottomRoom)) {
 			ConnectRooms(level, &currentRoom, &bottomRoom, false);
 
@@ -188,7 +189,7 @@ void DungeonLevel_GenerateLevel(DungeonLevel *level) {
 		}
 
 		DungeonRoom rightRoom;
-		int rightY = currentRoom.y + rand()%5 -5;
+		int rightY = currentRoom.y + rand()%10 - 5;
 		int rightX = currentRoom.x + currentRoom.w + rand()%5 + 1;
 		if (GenerateRoom(level, rightY, rightX, 50, 50, &rightRoom)) {
 			ConnectRooms(level, &currentRoom, &rightRoom, false);
@@ -211,6 +212,12 @@ void DungeonLevel_GenerateLevel(DungeonLevel *level) {
 
 	for (int i = 0; i < 5; i++) {
 		GenerateTunnel(level);
+	}
+
+	// generaljuk le kijaratokat nehany random szobaba
+	for (int i = 0; i < 5; i++) {
+		DungeonRoom exitRoom = rooms[rand()%roomCount];
+		level->tiles[exitRoom.y+1][exitRoom.x+1] = ExitGate;
 	}
 }
 

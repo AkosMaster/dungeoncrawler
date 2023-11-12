@@ -29,6 +29,12 @@ void Item_Interact_Attack(Item* item, int dirY, int dirX) {
 	}
 }
 
+void Item_Interact_Consume(Item* item) {
+	if (item->interact_Consume) {
+		item->interact_Consume(item);
+	}
+}
+
 void ItemInteractMenu(Item* item) {
 	if (item->interact_Reload) {
 		WriteText("r) reload");
@@ -38,7 +44,14 @@ void ItemInteractMenu(Item* item) {
 		WriteText("a) attack");
 	}
 
+	if (item->interact_Consume) {
+		WriteText("c) consume");
+	}
+
 	switch(WaitForInput(item->owner->level)) {
+		case 'c':
+			Item_Interact_Consume(item);
+			break;
 		case 'r':
 			if (item->interact_Reload) {
 

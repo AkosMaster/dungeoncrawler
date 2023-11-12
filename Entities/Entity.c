@@ -76,6 +76,7 @@ void Entity_Damage(Entity* entity, Entity* attacker, int points) {
 
 	entity->health -= points;
 	if (entity->health <= 0) {
+		attacker->score += entity->score;
 		Entity_deSpawn(entity);
 	}
 }

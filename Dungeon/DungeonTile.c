@@ -10,6 +10,7 @@ const Tile CaveWall = {.id=4, .symbol=' ', .foreColor=COLOR_BLACK, .backColor=CO
 const Tile RoomWall = {.id=5, .symbol=' ', .foreColor=COLOR_BLACK, .backColor=COLOR_WHITE, .walkable=false};
 const Tile ClosedDoor = {.id=6, .symbol='#', .foreColor=COLOR_BLACK, .backColor=COLOR_YELLOW, .walkable=false};
 const Tile OpenDoor = {.id=7, .symbol='_', .foreColor=COLOR_YELLOW, .backColor=COLOR_BLACK, .walkable=true};
+const Tile ExitGate = {.id=8, .symbol='@', .foreColor=COLOR_YELLOW, .backColor=COLOR_BLACK, .walkable=true};
 
 void DrawTile(int y, int x, Tile t) {
 	ColorPrintChar(y,x,t.symbol, t.foreColor, t.backColor);
