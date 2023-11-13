@@ -65,7 +65,7 @@ typedef struct Entity {
 	Interaction_Loot interact_Loot; // kifosztas
 
 	// utkereses, ez a jelenleg kovetett utvonal (ha van, nem minden entitas hasznalja)
-	NodeList currentPath;
+	NodeList* currentPath;
 
 	// statusz effektusok 
 	int status_fx[EntityStatusFXCount];

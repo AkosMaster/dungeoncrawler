@@ -2,6 +2,7 @@
 
 #include "Drawing.h"
 #include <ncurses/ncurses.h>
+#include "../Entities/Entity.h"
 #include "../Dungeon/DungeonLevel.h"
 #include <math.h>
 #include <windows.h>
@@ -85,7 +86,7 @@ char WaitForInput(DungeonLevel* level) {
 		ch = getch();
 	}
 	if (ch == '*') {
-		exit(0);
+		Entity_deSpawn(level->currentPlayer);
 	}
 	return ch;
 }

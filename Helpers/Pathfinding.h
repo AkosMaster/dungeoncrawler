@@ -13,11 +13,12 @@ typedef struct Node
 
 #define NODELIST_MAX 500
 #define NODELIST_INITCHECK 1337
+
+typedef struct NodeList NodeList;
 typedef struct NodeList {
+	Node data;
+	NodeList* next;
 	int length;
-	int size; // dynamically growing array
-	Node* items;
-	int initCheck; // for avoiding stupid errors
 } NodeList;
 
 #include "../Dungeon/DungeonLevel.h"
@@ -29,23 +30,22 @@ typedef struct NodeList {
 #include <math.h>
 #include <ncurses/ncurses.h>
 
-bool IsNodeListInit(NodeList *list);
+int NodeListLength(NodeList* q);
 
-void InitNodeList(NodeList *list);
-void ClearNodeList(NodeList *list);
+NodeList* ClearNodeList(NodeList *list);
 void FreeNodeList(NodeList *list);
 
-bool AppendToNodeList(NodeList *q, Node n);
+NodeList* AppendToNodeList(NodeList *q, Node n);
 
-Node PopNodeList(NodeList *q, int index);
+NodeList* PopNodeList(NodeList *q, int index, Node* out);
 // pop lowest F score from a List
-Node PopLowestFScore(NodeList *q, int goalY, int goalX);
+NodeList* PopLowestFScore(NodeList *q, int goalY, int goalX, Node* outNode);
 
 // find the node in the List that matches the x-y coordinates of the input node
 int FindNodeIndex(NodeList *q, Node *n);
 
-void Backtrace(DungeonLevel *level, NodeList *outPath, NodeList *closed, Node goalNode, int fromY, int fromX, int toY, int toX);
+NodeList* Backtrace(DungeonLevel *level, NodeList *closed, Node goalNode, int fromY, int fromX, int toY, int toX);
 
-void Pathfind(DungeonLevel *level, NodeList *outPath, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall, bool ignoreDoors);
+NodeList* Pathfind(DungeonLevel *level, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall, bool ignoreDoors);
 
 #endif

@@ -2,69 +2,85 @@
 
 #include "Pathfinding.h"
 
-bool IsNodeListInit(NodeList *list) {
-	return list->initCheck == NODELIST_INITCHECK;
+int NodeListLength(NodeList* q) {
+	if (q == NULL) {
+		return 0;
+	}
+	int c = 0;
+	while (q != NULL) {
+		c++;
+		q = q->next;
+	}
+	return c;
 }
 
-void InitNodeList(NodeList *list) {
-	list->size = 10;
-	list->length = 0;
-	list->items = (Node*)malloc(sizeof(Node) * list->size);
-	list->initCheck = NODELIST_INITCHECK;
-}
+NodeList* AppendToNodeList(NodeList* q, Node node) {
+	NodeList* new = (NodeList*)malloc(sizeof(NodeList));
+	new->data = node;
+	new->next = NULL;
 
-void ClearNodeList(NodeList *list) {
-	list->size = 10;
-	list->length = 0;
-	list->items = (Node*)realloc(list->items, sizeof(Node) * list->size);
-}
-
-void FreeNodeList(NodeList *list) {
-	list->size = 0;
-	list->initCheck = 0;
-	free(list->items);
-}
-
-bool AppendToNodeList(NodeList *q, Node n) {
-	if (!IsNodeListInit(q)) {
-		printf("ERROR: UNINITIALIZED NODELIST\n");
-		exit(1);
+	if (q == NULL) {
+		return new;
 	}
 
-	if (q->length >= q->size) {
-		q->size *= 2;
-		q->items = (Node*)realloc(q->items, sizeof(Node)*q->size);
+	NodeList* current = q;
+	while (current->next != NULL){
+		current = current->next;
 	}
+	current->next = new;
 
-	q->items[q->length] = n;
-	q->length++;
+	//printf("append\n");
 
-	if (q->length > NODELIST_MAX) {
-		printf("WARNING: NODELIST MAX EXCEEDED: %d\n", q->length);
-		exit(1);
-	}
-	return true;
+	return q;
 }
 
-Node PopNodeList(NodeList *q, int index) {
-	if (!IsNodeListInit(q)) {
-		printf("ERROR: UNINITIALIZED NODELIST\n");
-		exit(0);
+void FreeNodeList(NodeList* q) {
+	if (q == NULL) {
+		return;
+	} else {
+		FreeNodeList(q->next);
+		free(q);
+	}
+}
+
+NodeList* ClearNodeList(NodeList* q) {
+	FreeNodeList(q);
+	return NULL;
+}
+
+Node GetNodeAtIndex(NodeList* q, int index) {
+	int c = 0;
+	while (c < index) {
+		q = q->next;
+		c++;
+	}
+	//printf("getatidx\n");
+	return q->data;
+}
+
+NodeList* PopNodeList(NodeList* q, int index, Node* outNode) {
+	if (index == 0) {
+		*outNode = q->data;
+		NodeList* newFirst = q->next;
+		free(q);
+		//printf("pop\n");
+		return newFirst;
 	}
 
-	Node poppedNode = q->items[index];
-	memmove(&q->items[index], &q->items[index+1], (q->length-index-1)*sizeof(Node));
-	q->length--;
-	return poppedNode;
+	q->next = PopNodeList(q->next, index-1, outNode);
+	
+	return q;
 }
 
 // pop lowest F score from a List
-Node PopLowestFScore(NodeList *q, int goalY, int goalX) {
+NodeList* PopLowestFScore(NodeList *q, int goalY, int goalX, Node* outNode) {
 	
 	int lowestF = 99999999;
 	int bestIndex = 0;
-	for (int i = 0; i < q->length; i++) {
-		Node node = q->items[i];
+	int c = 0;
+	NodeList* current = q;
+	while (current != NULL) {
+		Node node = current->data;
 
 		int heuristic = pow(goalY - node.y, 2) + pow(goalX - node.x, 2);
 
@@ -72,30 +88,41 @@ Node PopLowestFScore(NodeList *q, int goalY, int goalX) {
 
 		if (f < lowestF) {
 			lowestF = f;
-			bestIndex = i;
+			bestIndex = c;
 		}
+		current = current->next;
+		c++;
 	}
 
-	return PopNodeList(q, bestIndex);
+	return PopNodeList(q, bestIndex, outNode);
 }
 
 // find the node in the List that matches the x-y coordinates of the input node
 int FindNodeIndex(NodeList *q, Node *n) {
-	for (int i = 0; i < q->length; i++) {
-		if (q->items[i].y == n->y && q->items[i].x == n->x) {
+	NodeList* current = q;
+	int i = 0;
+	while (current != NULL) {
+		//printf("	current: %p", current);
+		if (current->data.y == n->y && current->data.x == n->x) {
 			return i;
 		}
+		i++;
+		current = current->next;
 	}
 	return -1; // not found
 }
 
-void Backtrace(DungeonLevel *level, NodeList *outPath, NodeList *closed, Node goalNode, int fromY, int fromX, int toY, int toX) {
+NodeList* Backtrace(DungeonLevel *level, NodeList *closed, Node goalNode, int fromY, int fromX, int toY, int toX) {
+
+	//printf("btrace\n");
+
+	NodeList* outPath = NULL;
 
 	Node node = goalNode;
 
 	while (node.y != fromY || node.x != fromX) {
 
-		AppendToNodeList(outPath, node);
+		outPath = AppendToNodeList(outPath, node);
 
 		Node parentNode;
 		parentNode.y = node.parentY;
@@ -106,40 +133,45 @@ void Backtrace(DungeonLevel *level, NodeList *outPath, NodeList *closed, Node go
 		if (parentIndex == -1 || parentIndex >= closed->length) {
 			printf("Path could not be backtraced!\n");
 			exit(1); // TODO handle this
-			return;
+			return NULL;
 		} else {
-			node = closed->items[parentIndex];
+			node = GetNodeAtIndex(closed, parentIndex);//closed->items[parentIndex];
 		}
 	}
 	// append end position
-	AppendToNodeList(outPath, node);
+	outPath = AppendToNodeList(outPath, node);
+
+	return outPath;
 }
 
-void Pathfind(DungeonLevel *level, NodeList *outPath, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall, bool ignoreDoors) {
+NodeList* Pathfind(DungeonLevel *level, int fromY, int fromX, int toY, int toX, bool ignoreCaveWall, bool ignoreDoors) {
 
-	ClearNodeList(outPath); // clear output list
+	//printf("pfind\n");
 
 	Node startNode = {.y=fromY, .x=fromX, .g=0, .parentY=0, .parentX=0};
 	
-	NodeList OpenList;
-	InitNodeList(&OpenList);
-	NodeList ClosedList;
-	InitNodeList(&ClosedList);
+	NodeList* OpenList = NULL;
+	NodeList* ClosedList = NULL;
 
-	AppendToNodeList(&OpenList, startNode);
+	OpenList = AppendToNodeList(OpenList, startNode);
+
+	NodeList* outList = NULL;
 
 	// based on https://mat.uab.cat/~alseda/MasterOpt/AStar-Algorithm.pdf
-	while (OpenList.length > 0 && ClosedList.length < NODELIST_MAX && OpenList.length < NODELIST_MAX) {
-		Node currentNode = PopLowestFScore(&OpenList, toY, toX);
+	while (NodeListLength(OpenList) > 0 && NodeListLength(ClosedList) < NODELIST_MAX && NodeListLength(OpenList) < NODELIST_MAX) {
+		Node currentNode;
+		OpenList = PopLowestFScore(OpenList, toY, toX, &currentNode);
+
+		//printf("asd\n");
 
 		if (currentNode.y == toY && currentNode.x == toX) {
-
-			Backtrace(level, outPath, &ClosedList, currentNode, fromY, fromX, toY, toX);
+			outList = Backtrace(level, ClosedList, currentNode, fromY, fromX, toY, toX);
 			break;
 		}
 
 		// enumerate all 4 neighbours
 		for (int neighbor = 0; neighbor < 4; neighbor++) {
+			//printf("asd0.5\n");
 			Node successorNode = {.y=currentNode.y, .x=currentNode.x, .g=currentNode.g + 1, .parentY=currentNode.y, .parentX=currentNode.x};
 			switch (neighbor) {
 				case 0:
@@ -169,30 +201,38 @@ void Pathfind(DungeonLevel *level, NodeList *outPath, int fromY, int fromX, int 
 				}
 			}
 
-			int openListIndex = FindNodeIndex(&OpenList, &successorNode);
-			int closedListIndex = FindNodeIndex(&ClosedList, &successorNode);
+			//printf("Open: %p, closed: %p\n", OpenList, ClosedList);
 
+			int openListIndex = FindNodeIndex(OpenList, &successorNode);
+			int closedListIndex = FindNodeIndex(ClosedList, &successorNode);
+
+			//printf("\nasd2\n");
+
+			Node dontNeed;
 			if (openListIndex != -1) {
-				if (OpenList.items[openListIndex].g <= successorNode.g)
+				if (GetNodeAtIndex(OpenList, openListIndex).g <= successorNode.g)
 					continue; // the successor is already in the open List, and our path to it is not better than the previous.
 
 				// replace previous entry in open List since we found a better path
-				PopNodeList(&OpenList, openListIndex);
-				AppendToNodeList(&OpenList, successorNode);
+				OpenList = PopNodeList(OpenList, openListIndex, &dontNeed);
+				OpenList = AppendToNodeList(OpenList, successorNode);
 			} else if (closedListIndex != -1) {
-				if (ClosedList.items[closedListIndex].g <= successorNode.g)
+				if (GetNodeAtIndex(ClosedList, closedListIndex).g <= successorNode.g)
 					continue; // already closed, and we didnt find a better path to it
 
 				// Move from Closed to Open since we found a better path
-				PopNodeList(&ClosedList, closedListIndex);
-				AppendToNodeList(&OpenList, successorNode);
+				ClosedList = PopNodeList(ClosedList, closedListIndex, &dontNeed);
+				OpenList = AppendToNodeList(OpenList, successorNode);
 			} else {
 
-				AppendToNodeList(&OpenList, successorNode);
+				OpenList = AppendToNodeList(OpenList, successorNode);
 			}
+			//printf("asd3\n");
 		}
-		AppendToNodeList(&ClosedList, currentNode);
+		ClosedList = AppendToNodeList(ClosedList, currentNode);
 	}
-	FreeNodeList(&OpenList);
-	FreeNodeList(&ClosedList);
+	FreeNodeList(OpenList);
+	FreeNodeList(ClosedList);
+
+	return outList;
 }

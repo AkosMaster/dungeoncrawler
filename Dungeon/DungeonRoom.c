@@ -64,23 +64,24 @@ bool GenerateRoom(DungeonLevel *level, int y, int x, int maxheight, int maxwidth
 }
 
 bool GeneratePath(DungeonLevel *level, int startY, int startX, int endY, int endX, bool special) {
-	NodeList tunnelPath;
-	InitNodeList(&tunnelPath);
-	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true, true);
-	if (tunnelPath.length == 0) {
-		FreeNodeList(&tunnelPath);
+	NodeList* tunnelPath = NULL;
+	tunnelPath = Pathfind(level, startY,startX,endY,endX, true, true);
+	if (tunnelPath == NULL) {
+		FreeNodeList(tunnelPath);
 		return false;
 	}
 
-	for (int i = tunnelPath.length-1; i >= 0; i--) {
-		Node n = tunnelPath.items[i];
+	NodeList* current = tunnelPath;
+	while (current != NULL) {
+		Node n = current->data;
 
 		if (level->tiles[n.y][n.x].id == CaveWall.id) {
 			level->tiles[n.y][n.x] = special ? Floor2 : Floor0;
 		}
+		current = current->next;
 	}
 
-	FreeNodeList(&tunnelPath);
+	FreeNodeList(tunnelPath);
 	return true;
 }
 

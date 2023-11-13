@@ -4,7 +4,7 @@
 #include "../../Dungeon/DungeonLevel.h"
 
 void ECrawler_OnTurn(Entity* baseEntity) {
-	ECrawler* crawler = (ECrawler*)baseEntity;
+	/*ECrawler* crawler = (ECrawler*)baseEntity;
 
 	if (crawler->biteCooldown > 0) {
 		crawler->biteCooldown--;
@@ -35,13 +35,13 @@ void ECrawler_OnTurn(Entity* baseEntity) {
 			Entity_Damage(target, baseEntity, 10);
 			return;
 		}
-	}
+	}*/
 }
 
 void ECrawler_Draw(Entity* baseEntity) {
 	ECrawler* crawler = (ECrawler*)baseEntity;
 
-	if (crawler->biteCooldown > 0) {
+	/*if (crawler->biteCooldown > 0) {
 		for (int i = 0; i < crawler->baseEntity.currentPath.length; i++) {
 			Node node = crawler->baseEntity.currentPath.items[i];
 			//dbg path
@@ -51,7 +51,7 @@ void ECrawler_Draw(Entity* baseEntity) {
 				ColorPrintChar(screenY, screenX, '#', COLOR_MAGENTA, COLOR_BLACK);
 			}
 		} 
-	}
+	}*/
 
 	baseEntity->backColor = crawler->biteCooldown > 0 ? COLOR_MAGENTA : COLOR_BLACK;
 }
@@ -78,7 +78,6 @@ ECrawler* Spawn_ECrawler(DungeonLevel* level, int y, int x) {
 	crawler->baseEntity.score = 10;
 
 	crawler->biteCooldown = 0;
-	InitNodeList(&crawler->baseEntity.currentPath);
 
 	DungeonLevel_AddEntity(level, &crawler->baseEntity);
 

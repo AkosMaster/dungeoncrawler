@@ -133,12 +133,12 @@ void GenerateTunnel(DungeonLevel *level) {
 	int endY = rand()%LevelHeight;
 	int endX = rand()%LevelWidth;
 
-	NodeList tunnelPath;
-	InitNodeList(&tunnelPath);
-	Pathfind(level, &tunnelPath, startY,startX,endY,endX, true, false);
+	NodeList* tunnelPath = NULL;
+	tunnelPath = Pathfind(level, startY,startX,endY,endX, true, false);
 
-	for (int i = tunnelPath.length-1; i >= 0; i--) {
-		Node n = tunnelPath.items[i];
+	NodeList* current = tunnelPath;
+	while (current != NULL) {
+		Node n = current->data;
 
 		level->tiles[n.y][n.x] = Floor0;
 		if (n.y + 1 < LevelHeight && rand()%3 != 0)
@@ -149,8 +149,9 @@ void GenerateTunnel(DungeonLevel *level) {
 			level->tiles[n.y][n.x+1] = Floor1;
 		if (n.x - 1 > 0 && rand()%3 != 0)
 			level->tiles[n.y][n.x-1] = Floor1;
+		current = current->next;
 	}
-	FreeNodeList(&tunnelPath);
+	FreeNodeList(tunnelPath);
 }
 
 

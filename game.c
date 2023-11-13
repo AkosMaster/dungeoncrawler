@@ -38,6 +38,9 @@ int main() {
 	
 	DungeonLevel_InitLevel(&level0);
 	DungeonLevel_ClearLevel(&level0);
+
+	printf("genning level\n");
+
 	DungeonLevel_GenerateLevel(&level0);
 	
 	printf("> Map generated.\n");

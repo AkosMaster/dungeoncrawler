@@ -13,19 +13,22 @@ void Entity_OnTurn(Entity* entity) {
 	}
 
 	// progress on path
-	if (entity->currentPath.length <= 1) {
+	if (NodeListLength(entity->currentPath) <= 1) {
 		return;
 	}
 
-	int newY = entity->currentPath.items[entity->currentPath.length-2].y;
-	int newX = entity->currentPath.items[entity->currentPath.length-2].x;
+	Node newNode;
+	entity->currentPath = PopNodeList(entity->currentPath, NodeListLength(entity->currentPath)-1, &newNode);
+
+	int newY = newNode.y;
+	int newX = newNode.x;
 
 	if (entity->level->tiles[newY][newX].walkable) {
 		entity->y = newY;
 		entity->x = newX;
 	}
 
-	PopNodeList(&entity->currentPath, entity->currentPath.length-1);
+	
 }
 
 void Entity_OnGameTick(Entity* entity) {
@@ -55,9 +58,7 @@ void Entity_deSpawn(Entity* entity) {
 		entity->deSpawn(entity);
 	}
 
-	if (IsNodeListInit(&entity->currentPath)) {
-		FreeNodeList(&entity->currentPath);
-	}
+	FreeNodeList(entity->currentPath);
 
 	for (int i = 0; i < 10; i++) {
 		if (entity->inventory[i]) {
@@ -105,12 +106,12 @@ void Entity_Interact_Loot(Entity* entity, Entity* looter) {
 }
 
 void Entity_SetDestination(Entity* entity, int y, int x) {
-	ClearNodeList(&entity->currentPath);
-	Pathfind(entity->level, &entity->currentPath, entity->y, entity->x, y, x, false, false);
+	ClearNodeList(entity->currentPath);
+	entity->currentPath = Pathfind(entity->level, entity->y, entity->x, y, x, false, false);
 }
 
 void Entity_ClearDestination(Entity* entity) {
-	ClearNodeList(&entity->currentPath);
+	ClearNodeList(entity->currentPath);
 }
 
 bool Entity_AddItemToInventory(Entity* entity, Item* item) {
