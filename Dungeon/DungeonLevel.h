@@ -26,6 +26,7 @@ typedef struct DungeonLevel {
 	int loadedEntityCount;
 
 	Entity* currentPlayer;
+	bool gameWon;
 
 	int ratDeaths;
 } DungeonLevel;

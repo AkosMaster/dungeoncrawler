@@ -20,7 +20,59 @@
 
 #include "debugmalloc.h"
 
+void gameOverScreen(bool win, int score, char* name) {
+
+	printf("\n\n----- GAME OVER -----\n\n");
+
+	if (!win) {
+		printf("You died! Better luck next time!\n");
+	} else {
+		printf("Congratulations! You escaped the labyrinth!\n");
+	}
+
+	printf("Your score: %d\n", score);
+
+	FILE* scoreboardfile_read = fopen("scoreboard.txt", "r");
+	char entryname[50];
+	int entryscore;
+
+	FILE* scoreboardfile_append = fopen("scoreboard_updated.txt", "a");
+
+	printf("\n----- SCOREBOARD -----\n\n");
+	int place = 1;
+	bool placedBefore = false;
+	while (fscanf(scoreboardfile_read, "%s %d", entryname, &entryscore) >= 2) {
+		
+		if (entryscore <= score && !placedBefore) {
+			fprintf(scoreboardfile_append, "%s %d\n", name, score);
+			printf("%d. %s : %d <--\n", place, name, score);
+			place++;
+			placedBefore = true;
+		}
+		printf("%d. %s : %d\n", place, entryname, entryscore);
+		fprintf(scoreboardfile_append, "%s %d\n", entryname, entryscore);
+		place++;
+	}
+
+	if (!placedBefore) {
+		fprintf(scoreboardfile_append, "%s %d\n", name, score);
+		printf("%d. %s : %d <--\n", place, name, score);
+	}
+
+	fclose(scoreboardfile_read);
+	fclose(scoreboardfile_append);
+
+	remove("scoreboard.txt");
+	rename("scoreboard_updated.txt", "scoreboard.txt");
+
+	printf("\n----- ***** -----\n");
+}
+
 int main() {
+
+	char playerName[50];
+	printf("What is your name? ");
+	scanf("%s", playerName);
 
 	srand(time(0));
 
@@ -39,8 +91,6 @@ int main() {
 	DungeonLevel_InitLevel(&level0);
 	DungeonLevel_ClearLevel(&level0);
 
-	printf("genning level\n");
-
 	DungeonLevel_GenerateLevel(&level0);
 	
 	printf("> Map generated.\n");
@@ -52,7 +102,10 @@ int main() {
 
 	printf("> Player spawned.\n");
 	
-	while(level0.currentPlayer) {
+	int score = 0;
+
+	while(level0.currentPlayer && !level0.gameWon) {
+		score = level0.currentPlayer->score;
 		DungeonLevel_FindLoadedEntities(&level0);;
 		
 		DungeonLevel_DrawLevel(&level0);
@@ -65,5 +118,7 @@ int main() {
 	DungeonLevel_DeSpawnAllEntities(&level0);
 
 	endwin(); // end curses mode
+	gameOverScreen(level0.gameWon, score, playerName);
+	
 	return 0;
 }

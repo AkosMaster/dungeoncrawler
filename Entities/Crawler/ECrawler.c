@@ -4,7 +4,7 @@
 #include "../../Dungeon/DungeonLevel.h"
 
 void ECrawler_OnTurn(Entity* baseEntity) {
-	/*ECrawler* crawler = (ECrawler*)baseEntity;
+	ECrawler* crawler = (ECrawler*)baseEntity;
 
 	if (crawler->biteCooldown > 0) {
 		crawler->biteCooldown--;
@@ -29,29 +29,33 @@ void ECrawler_OnTurn(Entity* baseEntity) {
 			Entity_SetDestination(baseEntity, target->y, target->x);
 		}
 
-		if (crawler->baseEntity.currentPath.length <= 4 && canSeeTarget) {
+		if (NodeListLength(crawler->baseEntity.currentPath) <= 4 && canSeeTarget) {
 			// we are close to the player
 			crawler->biteCooldown = 4;
 			Entity_Damage(target, baseEntity, 10);
 			return;
 		}
-	}*/
+	}
 }
 
 void ECrawler_Draw(Entity* baseEntity) {
 	ECrawler* crawler = (ECrawler*)baseEntity;
 
-	/*if (crawler->biteCooldown > 0) {
-		for (int i = 0; i < crawler->baseEntity.currentPath.length; i++) {
-			Node node = crawler->baseEntity.currentPath.items[i];
-			//dbg path
-			int screenY;
-			int screenX;
-			if (WorldToScreen(node.y, node.x, &screenY, &screenX)) {
-				ColorPrintChar(screenY, screenX, '#', COLOR_MAGENTA, COLOR_BLACK);
+	if (crawler->biteCooldown > 0) {
+		if (crawler->baseEntity.currentPath) {
+
+			NodeList* node = crawler->baseEntity.currentPath;
+			while (node != NULL && node->next != NULL) { //skip last node as it is at feet of crawler
+				//dbg path
+				int screenY;
+				int screenX;
+				if (WorldToScreen(node->data.y, node->data.x, &screenY, &screenX)) {
+					ColorPrintChar(screenY, screenX, '#', COLOR_MAGENTA, COLOR_BLACK);
+				} 
+				node = node->next;
 			}
-		} 
-	}*/
+		}
+	}
 
 	baseEntity->backColor = crawler->biteCooldown > 0 ? COLOR_MAGENTA : COLOR_BLACK;
 }

@@ -13,6 +13,7 @@
 void DungeonLevel_InitLevel(DungeonLevel* level) {
 	level->entityCount = 0;
 	level->ratDeaths = 0;
+	level->gameWon = false;
 } 
 
 void DungeonLevel_AddEntity(DungeonLevel* level, Entity* entity) {

@@ -102,6 +102,12 @@ void EPlayer_OnTurn(Entity* baseEntity) {
 	if (level->tiles[newY][newX].walkable) {
 		baseEntity->y = newY;
 		baseEntity->x = newX;
+
+		if (level->tiles[newY][newX].id == 8) {
+			// player wins game
+
+			level->gameWon = true;
+		}
 	}
 
 	ViewCenterY = baseEntity->y;
@@ -132,7 +138,7 @@ void DrawInventory(EPlayer* player) {
 				mvprintw(6+i, DrawnLevelWidth+8, "%s ", item->name);
 			}
 		} else {
-			mvprintw(6+i, DrawnLevelWidth+2, "#");
+			mvprintw(6+i, DrawnLevelWidth+2, "#                  ");
 		}
 	}
 }

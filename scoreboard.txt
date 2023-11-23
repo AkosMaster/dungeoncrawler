@@ -1,0 +1,10 @@
+niki 100
+kant 62
+asd 59
+johann 21
+janos 21
+peter 12
+pisti 10
+akos 3
+godel 1
+bela 1

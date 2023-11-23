@@ -5,6 +5,7 @@
 
 #include "../../Items/Gold/IGold.h"
 #include "../../Items/MagicWand/IMagicWand.h"
+#include "../../Items/HealingPotion/IHealingPotion.h"
 
 void EChest_Draw(Entity* baseEntity) {	
 	
@@ -19,6 +20,9 @@ void EChest_GenerateItems(EChest* chest) {
 
 	if (rand()%4 == 0) {
 		Give_IMagicWand(&chest->baseEntity, Spell_Freeze);
+	}
+	if (rand()%2 == 0) {
+		Give_IHealingPotion(&chest->baseEntity, rand()%3 + 1);
 	}
 }
 

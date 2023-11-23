@@ -18,7 +18,7 @@ void Entity_OnTurn(Entity* entity) {
 	}
 
 	Node newNode;
-	entity->currentPath = PopNodeList(entity->currentPath, NodeListLength(entity->currentPath)-1, &newNode);
+	entity->currentPath = PopNodeList(entity->currentPath, NodeListLength(entity->currentPath)-2, &newNode);
 
 	int newY = newNode.y;
 	int newX = newNode.x;
